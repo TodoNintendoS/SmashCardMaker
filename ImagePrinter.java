@@ -2,8 +2,6 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -23,29 +21,6 @@ public class ImagePrinter
 	final static String main = "Young Link";
 	final static int skin = 2;
 	
-	/**
-	 * @param bgNonScale 	Image that needs to be modified
-	 * @param newWidth 		New width value for said image
-	 * @param newHeight 	New height value for said image
-	 * @param flip 			Flip factor. -1 flips the image entirely
-	 * @param isRender 		Because only renders can be flipped.
-	 * @returns 			Image properly scaled
-	 */
-	public static BufferedImage resize(Image bgNonScale, int newWidth, int newHeight, int flip)
-	{
-		BufferedImage bgTemp =
-				new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-		
-		int displacement = 0;
-		if(flip == -1) displacement = newWidth;
-		
-		Graphics2D g2d = bgTemp.createGraphics();
-		g2d.drawImage(bgNonScale, displacement, 0, newWidth*flip, newHeight, null);
-		g2d.dispose();
-		
-		return bgTemp;
-	}
-	
 	public static void renderCard() throws IOException
 	{
 		long start = System.currentTimeMillis();
@@ -55,7 +30,7 @@ public class ImagePrinter
 				ImageIO.read(new File("./images/backgrounds/orangeTest.jpg"));
 		
 		//Resizes the background to fit the card dimensions
-		BufferedImage bg = resize(bgNonScale, width, height, 1);
+		BufferedImage bg = ImageResizer.resize(bgNonScale, width, height, 1);
 	    
 		//Loads the render for the user's main and skin
 	    BufferedImage render =
@@ -65,9 +40,9 @@ public class ImagePrinter
 	    List<Integer> modFactors = Positioning.mainScaler(main, skin);
 
 	    //Resizes the render to fit within the card with the desired variables
-	    render = resize(render, (int)((double)render.getWidth()*((double)modFactors.get(0)/100.0)), 
-	    						(int)((double)render.getHeight()*((double)modFactors.get(1)/100.0)),
-	    						(modFactors.get(2)));
+	    render = ImageResizer.resize(render, (int)((double)render.getWidth()*((double)modFactors.get(0)/100.0)), 
+	    						    (int)((double)render.getHeight()*((double)modFactors.get(1)/100.0)),
+	    						    (modFactors.get(2)));
 	    
 	    //Pastes the render in the background
 	    Graphics paster = bg.getGraphics();
